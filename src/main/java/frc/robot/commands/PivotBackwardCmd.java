@@ -4,7 +4,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class PivotBackwardCmd extends Command  {
     
     public IntakeSystem pivotSystem ;
-    public PivotBackwardCmd(IntakeSystem b){
+    public double angle;
+    public PivotBackwardCmd(IntakeSystem b, double ang){
+      angle = ang;
       pivotSystem = b;
     }
     
@@ -14,7 +16,7 @@ public class PivotBackwardCmd extends Command  {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    pivotSystem.setBackward();
+    pivotSystem.setPivotAngle(angle);
   }
 
   // Called once the command ends or is interrupted.
