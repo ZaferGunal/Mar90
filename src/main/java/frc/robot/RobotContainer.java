@@ -46,10 +46,10 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    new JoystickButton(driverXbox,3).whileTrue(new ShootCmd(shooterSystem));
+   /*  new JoystickButton(driverXbox,3).whileTrue(new ShootCmd(shooterSystem));
     new JoystickButton(driverXbox,2).whileTrue(new PivotBackwardCmd(intakeSystem,8));
-    new JoystickButton(driverXbox,1).whileTrue(new PivotBackwardCmd(intakeSystem,42));
-    //new JoystickButton(driverXbox,1).whileTrue(drivebase.driveToPose(new Pose2d(new Translation2d(0,0),new Rotation2d(Math.PI/2))));
+    new JoystickButton(driverXbox,1).whileTrue(new PivotBackwardCmd(intakeSystem,42));*/
+    new JoystickButton(driverXbox,1).whileTrue(drivebase.driveToPose(new Pose2d(new Translation2d(0,0),new Rotation2d(Math.PI/2))));
   }
 
   public Command getAutonomousCommand() {
