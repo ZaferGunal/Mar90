@@ -1,13 +1,15 @@
 package frc.robot.commands;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ShooterSystem;
-public class ShootCmd extends Command {
+import frc.robot.subsystems.RollerSubsystem;
+public class RollerBackCmd  extends Command{
 
-    ShooterSystem shooterSystem ;
-
-public ShootCmd(ShooterSystem shooterSystem_){
-shooterSystem = shooterSystem_;
-}
+RollerSubsystem intakeSystem;
+ double voltage ;
+    public RollerBackCmd(RollerSubsystem intakeSystem_, double voltage_){
+        intakeSystem = intakeSystem_;
+      voltage = voltage_;
+    }
 
     @Override
     public void initialize() {}
@@ -15,14 +17,14 @@ shooterSystem = shooterSystem_;
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        shooterSystem.shoot(10);
+        intakeSystem.setRollerSpeed(voltage);
     
     }
   
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-      shooterSystem.stopMotors();
+      intakeSystem.stopRoller();
     }
   
     // Returns true when the command should end.
@@ -30,4 +32,5 @@ shooterSystem = shooterSystem_;
     public boolean isFinished() {
       return false;
 }
+    
 }

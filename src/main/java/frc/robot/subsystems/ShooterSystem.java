@@ -7,7 +7,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ShooterSystem extends SubsystemBase {
 
-    private double kP = 0.8;
+    private double kP = 0.3;
     private double kI = 0.0;
     private double kD = 0.0;
     private double kFF = 0.0;
@@ -31,14 +31,17 @@ public class ShooterSystem extends SubsystemBase {
    m_PidControllerRight.setI(kI);
    m_PidControllerRight.setD(kD);
    m_PidControllerRight.setFF(kFF);
+   
 
    motorRightShoot.setInverted(true);
    }
     
   
 public void shoot(double speed){
-    m_PidControllerLeft.setReference(speed, CANSparkMax.ControlType.kVelocity);
-    m_PidControllerRight.setReference(speed,CANSparkMax.ControlType.kVelocity);
+  //  m_PidControllerLeft.setReference(speed, CANSparkMax.ControlType.kVelocity);
+   // m_PidControllerRight.setReference(speed,CANSparkMax.ControlType.kVelocity);
+   motorLeftShoot.setVoltage(2.75);
+   motorRightShoot.setVoltage(10);
 
 }
 

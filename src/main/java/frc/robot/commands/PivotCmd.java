@@ -1,11 +1,11 @@
 package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
  import frc.robot.subsystems.IntakeSystem;
-public class PivotBackwardCmd extends Command  {
+public class PivotCmd extends Command  {
     
     public IntakeSystem pivotSystem ;
     public double angle;
-    public PivotBackwardCmd(IntakeSystem b, double ang){
+    public PivotCmd(IntakeSystem b, double ang){
       angle = ang;
       pivotSystem = b;
     }
@@ -17,12 +17,13 @@ public class PivotBackwardCmd extends Command  {
   @Override
   public void execute() {
     pivotSystem.setPivotAngle(angle);
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    pivotSystem.stopMotor();
+    pivotSystem.stopPivot();
   }
 
   // Returns true when the command should end.
@@ -30,4 +31,4 @@ public class PivotBackwardCmd extends Command  {
   public boolean isFinished() {
     return false;
   }
-}
+}                              

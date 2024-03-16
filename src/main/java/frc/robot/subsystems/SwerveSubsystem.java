@@ -21,11 +21,44 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.proto.Trajectory;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+
+import java.io.File;
+import java.util.function.DoubleSupplier;
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+import swervelib.SwerveController;
+import swervelib.SwerveDrive;
+import swervelib.SwerveDriveTest;
+import swervelib.math.SwerveMath;
+import swervelib.parser.SwerveControllerConfiguration;
+import swervelib.parser.SwerveDriveConfiguration;
+import swervelib.parser.SwerveParser;
+
 
 public class SwerveSubsystem extends SubsystemBase{
     private final SwerveDrive swerveDrive;
     double maximumSpeed = Units.feetToMeters(14.5);
+    double k_deadzone = 0.05;
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), "swerve");
 
     public SwerveSubsystem() {
@@ -77,9 +110,9 @@ public class SwerveSubsystem extends SubsystemBase{
             DoubleSupplier angularRotationX) {
         return run(() -> {
             // Make the robot move
-            swerveDrive.drive(new Translation2d(translationX.getAsDouble() * swerveDrive.getMaximumVelocity(),
-                    translationY.getAsDouble() * swerveDrive.getMaximumVelocity()),
-                    angularRotationX.getAsDouble() * swerveDrive.getMaximumAngularVelocity(),
+            swerveDrive.drive(new Translation2d((Math.abs(translationX.getAsDouble())> k_deadzone? translationX.getAsDouble():0) * swerveDrive.getMaximumVelocity(),
+                    (Math.abs(translationY.getAsDouble()) > k_deadzone ? translationY.getAsDouble():0) * swerveDrive.getMaximumVelocity()),
+                    (Math.abs(angularRotationX.getAsDouble()) > k_deadzone ? angularRotationX.getAsDouble():0) * swerveDrive.getMaximumAngularVelocity(),
                     true,
                     false);
         });
@@ -158,5 +191,120 @@ public class SwerveSubsystem extends SubsystemBase{
         0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
                                      );
   }
+
+  @Override
+  public void periodic(){
+    
+  }
+
+
+
+  public void drive(Translation2d translation, double rotation, boolean fieldRelative)
+  {
+    swerveDrive.drive(translation,
+                      rotation,
+                      fieldRelative,
+                      false); // Open loop is disabled since it shouldn't be used most of the time.
+  }
+
+
+  public void driveFieldOriented(ChassisSpeeds velocity)
+  {
+    swerveDrive.driveFieldOriented(velocity);
+  }
+
+  /**
+   * Drive according to the chassis robot oriented velocity.
+   *
+   * @param velocity Robot oriented {@link ChassisSpeeds}
+   */
+  public void drive(ChassisSpeeds velocity)
+  {
+    swerveDrive.drive(velocity);
+  }
+
+
+
+    
+  public SwerveDriveKinematics getKinematics()
+  {
+    return swerveDrive.kinematics;
+  }
+
+  
+  public void zeroGyro()
+  {
+    swerveDrive.zeroGyro();
+  }
+
+  
+  public void setMotorBrake(boolean brake)
+  {
+    swerveDrive.setMotorIdleMode(brake);
+  }
+
+  public Rotation2d getHeading()
+  {
+    return getPose().getRotation();
+  }
+
+
+
+  public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, double headingX, double headingY)
+  {
+    xInput = Math.pow(xInput, 3);
+    yInput = Math.pow(yInput, 3);
+    return swerveDrive.swerveController.getTargetSpeeds(xInput,
+                                                        yInput,
+                                                        headingX,
+                                                        headingY,
+                                                        getHeading().getRadians(),
+                                                        maximumSpeed);
+  }
+
+
+  public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle)
+  {
+    xInput = Math.pow(xInput, 3);
+    yInput = Math.pow(yInput, 3);
+    return swerveDrive.swerveController.getTargetSpeeds(xInput,
+                                                        yInput,
+                                                        angle.getRadians(),
+                                                        getHeading().getRadians(),
+                                                        maximumSpeed);
+  }
+
+
+  public ChassisSpeeds getFieldVelocity()
+  {
+    return swerveDrive.getFieldVelocity();
+  }
+
+  public SwerveController getSwerveController()
+  {
+    return swerveDrive.swerveController;
+  }
+
+
+  public SwerveDriveConfiguration getSwerveDriveConfiguration()
+  {
+    return swerveDrive.swerveDriveConfiguration;
+  }
+
+
+  public void lock()
+  {
+    swerveDrive.lockPose();
+  }
+
+
+
+  public Rotation2d getPitch()
+  {
+    return swerveDrive.getPitch();
+  }
+
+
+
 
 }
