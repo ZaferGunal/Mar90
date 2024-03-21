@@ -1,54 +1,49 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-public class ShooterSystem extends SubsystemBase {
 
-    private double kP = 0.3;
-    private double kI = 0.0;
-    private double kD = 0.0;
-    private double kFF = 0.0;
+import com.revrobotics.CANSparkLowLevel;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
+import frc.robot.SystemConstants.IntakeConstants;
+import frc.robot.SystemConstants.ShooterConstants;
+public class ShooterSystem extends SubsystemBase
+{
 
-    private SparkPIDController m_PidControllerRight;
-    private SparkPIDController m_PidControllerLeft;
-     CANSparkMax motorLeftShoot = new CANSparkMax(20,MotorType.kBrushless);
-  CANSparkMax motorRightShoot = new CANSparkMax(21,MotorType.kBrushless);
+    private CANSparkMax shootLeftMotor;
+    private CANSparkMax shootRightMotor;
+    public ShooterSystem(){
+        shootLeftMotor = new CANSparkMax(ShooterConstants.shooterLeftMotorId,CANSparkLowLevel.MotorType.kBrushless);
+         shootRightMotor = new CANSparkMax(ShooterConstants.shooterRightMotorId,CANSparkLowLevel.MotorType.kBrushless);
 
-  
+         shootLeftMotor.setInverted(ShooterConstants.shooterLeftMotorInverted);
+         shootRightMotor.setInverted(ShooterConstants.shooterRightMotorInverted);
+
+    }
 
 
-   public ShooterSystem(){
-   m_PidControllerLeft = motorLeftShoot.getPIDController();
-   m_PidControllerLeft.setP(kP);
-   m_PidControllerLeft.setI(kI);
-   m_PidControllerLeft.setD(kD);
-   m_PidControllerLeft.setFF(kFF);
-    m_PidControllerRight = motorRightShoot.getPIDController();
-   m_PidControllerRight.setP(kP);
-   m_PidControllerRight.setI(kI);
-   m_PidControllerRight.setD(kD);
-   m_PidControllerRight.setFF(kFF);
-   
 
-   motorRightShoot.setInverted(true);
-   }
+    public void shoot2Spkr(){
+        shootLeftMotor.setVoltage(ShooterConstants.speakerShootingVoltage);
+        shootRightMotor.setVoltage(ShooterConstants.speakerShootingVoltage);
+    }
+
+
+    public void shoot2amp(){
+        shootLeftMotor.setVoltage(ShooterConstants.ampShootingVoltage);
+        shootRightMotor.setVoltage(ShooterConstants.ampShootingVoltage);
+    }
+
+
+    public void stopShooter(){
+        shootLeftMotor.set(0);
+        shootRightMotor.set(0);
+
+    }
+
     
-  
-public void shoot(double speed){
-  //  m_PidControllerLeft.setReference(speed, CANSparkMax.ControlType.kVelocity);
-   // m_PidControllerRight.setReference(speed,CANSparkMax.ControlType.kVelocity);
-   motorLeftShoot.setVoltage(2.75);
-   motorRightShoot.setVoltage(10);
-
-}
 
 
 
-public void stopMotors(){
-    motorLeftShoot.set(0);
-    motorRightShoot.set(0);
-}
+    
 }

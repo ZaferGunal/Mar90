@@ -13,24 +13,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
-  public static SendableChooser<String> autoChooser = new SendableChooser<>();
+  private Command m_autoCommand ;
+ private RobotContainer robotContainer;
+ SendableChooser<String> autoChooser= new SendableChooser() ;
 
-  private RobotContainer m_robotContainer;
 
   @Override
   public void robotInit() {
-    autoChooser.setDefaultOption("Mid 3 piece", "mid-3");
-    autoChooser.addOption("Left 2 piece", "left-2");
-    autoChooser.addOption("Left 3 longway", "left3-longway");
-    autoChooser.addOption("Shoot and Wait Mid", "shoot-wait-mid");
-    autoChooser.addOption("Shoot and Wait Left", "shoot-wait-left");
-    autoChooser.addOption("Shoot and Wait Right", "shoot-wait-right");
-    autoChooser.addOption("No auto", "null");
-    SmartDashboard.putData("Auto selector",autoChooser);
-    m_robotContainer = new RobotContainer();
+   // autoChooser.addOption("Mid / 2 Obj from Left", "mid / 2 Obj from left");
+      SmartDashboard.putData("AutoChooser",autoChooser);
+      robotContainer = new RobotContainer();
   }
-
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
@@ -47,12 +40,16 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand(autoChooser.getSelected());
-
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+   
+    m_autoCommand = robotContainer.getAutonomousCommand(autoChooser.getSelected());
+    if(m_autoCommand != null){
+      m_autoCommand.schedule();
     }
-  }
+    
+    }
+
+   
+  
 
   @Override
   public void autonomousPeriodic() {}
@@ -62,9 +59,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }
+   if(m_autoCommand != null){
+    m_autoCommand.cancel();
+   }
   }
 
   @Override

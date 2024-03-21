@@ -4,17 +4,17 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.PivotCmd;
+/*import frc.robot.commands.PivotCmd;
 import frc.robot.commands.RollerCapture;
 import frc.robot.commands.RollerPush;
 import frc.robot.commands.ShootCmd;
-import frc.robot.subsystems.IntakeSystem;
+import frc.robot.subsystems.Intk;
 import frc.robot.subsystems.RollerSubsystem;
-import frc.robot.subsystems.ShooterSystem;
+import frc.robot.subsystems.SH;
 import frc.robot.subsystems.SwerveSubsystem;
-
+*/
 public class LeftThreePiece extends SequentialCommandGroup {
-   public LeftThreePiece(RollerSubsystem roller, ShooterSystem shooter, SwerveSubsystem drivebase, IntakeSystem intake,
+  /* public LeftThreePiece(RollerSubsystem roller, SH shooter, SwerveSubsystem drivebase, Intk intake,
          PathPlannerPath path1, PathPlannerPath path2, PathPlannerPath path3, PathPlannerPath path4,
          PathPlannerPath path5) {
       super(new ShootCmd(shooter).withTimeout(1),
@@ -28,4 +28,5 @@ public class LeftThreePiece extends SequentialCommandGroup {
                   new ShootCmd(shooter).withTimeout(2).raceWith(new RollerPush(roller, 5)),
                         AutoBuilder.followPath(path5));
    }
+   */
 }

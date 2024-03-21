@@ -4,6 +4,12 @@
 
 package frc.robot;
 
+// TEST 
+import frc.robot.commands.Test.Hold;
+import frc.robot.commands.Test.Capture;
+
+
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,21 +21,15 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.subsystems.IntakeSystem;
-import frc.robot.subsystems.RollerSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.commands.PivotCmd;
-import frc.robot.commands.RollerBackCmd;
-import frc.robot.commands.ShootCmd;
+
 import frc.robot.commands.auto.LeftThreePiece;
 import frc.robot.commands.auto.LeftTwoPiece;
 import frc.robot.commands.auto.ShootAndWait;
 import frc.robot.commands.auto.ThreePiece;
-import frc.robot.commands.RollerPush;
 import frc.robot.commands.AbsoluteDriveAdv;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.subsystems.SwerveSubsystem;
 
-import frc.robot.commands.RollerCapture;
 
 import javax.tools.StandardJavaFileManager.PathFactory;
 import edu.wpi.first.networktables.NetworkTable;
@@ -38,14 +38,18 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Translation2d;
 
-import frc.robot.subsystems.ShooterSystem;
 
+import frc.robot.subsystems.IntakeSystem;
+import frc.robot.subsystems.ShooterSystem;
+//SequentialCommands
+import frc.robot.commands.SequentialCommands.ReadyCapture;
+import frc.robot.commands.SequentialCommands.ReadyCarry2Feed;
+import frc.robot.commands.SequentialCommands.ReadyShootSpkr;
 
 
 public class RobotContainer {
   SwerveSubsystem drivebase = new SwerveSubsystem();
   IntakeSystem intakeSystem = new IntakeSystem();
-  RollerSubsystem rollerSystem = new RollerSubsystem();
   ShooterSystem shooterSystem = new ShooterSystem();
   
 
@@ -58,7 +62,7 @@ JoystickButton n = new JoystickButton(driverXbox, 1);
 
   public RobotContainer() {
 
-    NamedCommands.registerCommand("shoot", new ShootCmd(shooterSystem));
+
     configureBindings();
 
     Command driveFieldOrientedAnglularVelocity =new AbsoluteDriveAdv(
@@ -75,24 +79,14 @@ JoystickButton n = new JoystickButton(driverXbox, 1);
   }
 
   private void configureBindings() {
-    new JoystickButton(secondXbox, 1)
-        .whileTrue(new RollerCapture(rollerSystem, 1.3).alongWith(new PivotCmd(intakeSystem, 5)));
-    new JoystickButton(secondXbox, 2)
-        .whileTrue(new RollerCapture(rollerSystem, 3).alongWith(new PivotCmd(intakeSystem, 48)));
-    new JoystickButton(secondXbox, 5).whileTrue(new ShootCmd(shooterSystem));
+  //  new JoystickButton(driverXbox,1).whileTrue(new ReadyCapture(intakeSystem,shooterSystem).andThen(new ReadyCarry2Feed(intakeSystem)));
+     new JoystickButton(driverXbox,1).whileTrue(new ReadyCapture(intakeSystem, shooterSystem));    
+     new JoystickButton(driverXbox,2).whileTrue(new ReadyCarry2Feed(intakeSystem));            
+     new JoystickButton(driverXbox,6).whileTrue(new ReadyShootSpkr(intakeSystem, shooterSystem));
+     
+     
 
-    new JoystickButton(secondXbox, 6)
-        .whileTrue(new PivotCmd(intakeSystem, 5).alongWith(new RollerPush(rollerSystem, 6)));
-    // new JoystickButton(secondXbox,5).whileTrue(new ShootCmd(shooterSystem));
-    // new JoystickButton(secondXbox,1).whileTrue(new RollerBackCmd(intakeSystem,
-    // 5));
-
-    // new JoystickButton(secondXbox,6).whileTrue(new
-    // RollerBackCmd(intakeSystem,5));
-    // new JoystickButton(secondXbox,2).whileTrue(new PivotCmd(intakeSystem,5));
-    // new JoystickButton(secondXbox,4).whileTrue(new PivotCmd(intakeSystem,48));a
-    // new JoystickButton(driverXbox,1).whileTrue(drivebase.driveToPose(new
-    // Pose2d(new Translation2d(0,0),new Rotation2d())));
+    
   }
 
   public Command getAutonomousCommand(String choosenAuton) {
@@ -104,23 +98,23 @@ JoystickButton n = new JoystickButton(driverXbox, 1);
         PathPlannerPath midpath4 = PathPlannerPath.fromPathFile("3obj-5");
         PathPlannerPath midpath5 = PathPlannerPath.fromPathFile("3obj-6");
         drivebase.resetOdometry(midpath1.getPreviewStartingHolonomicPose());
-        return new ThreePiece(rollerSystem, shooterSystem, drivebase, intakeSystem, midpath1, midpath2, midpath3,
-            midpath4, midpath5);
+     //   return new ThreePiece(rollerSystem, shooterSystem, drivebase, intakeSystem, midpath1, midpath2, midpath3,
+           // midpath4, midpath5);
       case "left-2":
         PathPlannerPath leftpath1 = PathPlannerPath.fromPathFile("left2obj-1");
         PathPlannerPath leftpath2 = PathPlannerPath.fromPathFile("left2obj-2");
         PathPlannerPath leftpath3 = PathPlannerPath.fromPathFile("left2obj-3");
         drivebase.resetOdometry(leftpath1.getPreviewStartingHolonomicPose());
-        return new LeftTwoPiece(rollerSystem, shooterSystem, drivebase, intakeSystem, leftpath1, leftpath2, leftpath3);
+       // return new LeftTwoPiece(rollerSystem, shooterSystem, drivebase, intakeSystem, leftpath1, leftpath2, leftpath3);
       case "shoot-wait-left":
         drivebase.resetOdometry(PathPlannerPath.fromPathFile("left2obj-1").getPreviewStartingHolonomicPose());
-        return new ShootAndWait(shooterSystem);
+      //  return new ShootAndWait(shooterSystem);
       case "shoot-wait-right":
         drivebase.resetOdometry(PathPlannerPath.fromPathFile("rightpath").getPreviewStartingHolonomicPose());
-        return new ShootAndWait(shooterSystem);
+      //  return new ShootAndWait(shooterSystem);
       case "shoot-wait-mid":
         drivebase.resetOdometry(PathPlannerPath.fromPathFile("3obj-2").getPreviewStartingHolonomicPose());
-        return new ShootAndWait(shooterSystem);
+       // return new ShootAndWait(shooterSystem);
       case "left3-longway":
       PathPlannerPath left3_1 = PathPlannerPath.fromPathFile("left3-longway-1");
         PathPlannerPath left3_2 = PathPlannerPath.fromPathFile("left3-longway-2");
@@ -128,8 +122,9 @@ JoystickButton n = new JoystickButton(driverXbox, 1);
         PathPlannerPath left3_4 = PathPlannerPath.fromPathFile("left3-longway-4");
         PathPlannerPath left3_5 = PathPlannerPath.fromPathFile("left3-longway-5");
         drivebase.resetOdometry(left3_1.getPreviewStartingHolonomicPose());
-        return new LeftThreePiece(rollerSystem, shooterSystem, drivebase, intakeSystem,left3_1,left3_2,left3_3,left3_4,left3_5);
+        //return new LeftThreePiece(rollerSystem, shooterSystem, drivebase, intakeSystem,left3_1,left3_2,left3_3,left3_4,left3_5);
     }
+    
     return null;
 
   }
